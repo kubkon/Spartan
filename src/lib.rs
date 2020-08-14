@@ -1,6 +1,6 @@
 #![allow(non_snake_case)]
 #![feature(test)]
-#![deny(missing_docs)]
+// #![deny(missing_docs)]
 #![feature(external_doc)]
 #![doc(include = "../README.md")]
 
@@ -14,25 +14,24 @@ extern crate rayon;
 extern crate sha3;
 extern crate test;
 
-mod commitments;
-mod dense_mlpoly;
-mod errors;
-mod group;
-mod math;
-mod nizk;
-mod product_tree;
-mod r1csinstance;
-mod r1csproof;
-mod random;
-mod scalar;
-mod sparse_mlpoly;
-mod sumcheck;
-mod timer;
-mod transcript;
-mod unipoly;
+pub mod commitments;
+pub mod dense_mlpoly;
+pub mod errors;
+pub mod group;
+pub mod math;
+pub mod nizk;
+pub mod product_tree;
+pub mod r1csinstance;
+pub mod r1csproof;
+pub mod random;
+pub mod scalar;
+pub mod sparse_mlpoly;
+pub mod sumcheck;
+pub mod timer;
+pub mod transcript;
+pub mod unipoly;
 
 use errors::ProofVerifyError;
-use merlin::Transcript;
 use r1csinstance::{
   R1CSCommitment, R1CSCommitmentGens, R1CSDecommitment, R1CSEvalProof, R1CSInstance,
 };
@@ -42,6 +41,8 @@ use scalar::Scalar;
 use serde::{Deserialize, Serialize};
 use timer::Timer;
 use transcript::{AppendToTranscript, ProofTranscript};
+
+pub use merlin::Transcript; // re-export for convenience
 
 /// `ComputationCommitment` holds a public preprocessed NP statement (e.g., R1CS)
 pub struct ComputationCommitment {
@@ -68,6 +69,12 @@ impl Instance {
     let (inst, vars, inputs) = R1CSInstance::produce_synthetic_r1cs(num_cons, num_vars, num_inputs);
     (Instance { inst }, vars, inputs)
   }
+}
+
+impl From<R1CSInstance> for Instance {
+    fn from(inst: R1CSInstance) -> Self {
+        Self { inst }
+    }
 }
 
 /// `SNARKGens` holds public parameters for producing and verifying proofs with the Spartan SNARK
